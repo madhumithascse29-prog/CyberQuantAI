@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f6fb">
+  <title>CyberQuant AI — Cyber Risk Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d17;
+      --panel: #0d1421;
+      --panel-2: #101a29;
+      --line: rgba(157, 181, 213, .11);
+      --line-strong: rgba(157, 181, 213, .17);
+      --text: #e9f0fa;
+      --muted: #7d8ba1;
+      --faint: #55647a;
+      --blue: #6099ff;
+      --cyan: #5ad8e8;
+      --green: #50d6a5;
+      --amber: #ffbf69;
+      --red: #ff6d7c;
+      --font: "DM Sans", sans-serif;
+      --display: "Manrope", sans-serif;
+      --mono: "DM Mono", monospace;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-2: #f7f9fd;
+      --line: rgba(48, 72, 108, .12);
+      --line-strong: rgba(48, 72, 108, .2);
+      --text: #17253a;
+      --muted: #64748b;
+      --faint: #8492a6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; min-width: 320px; }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    .app { min-height: 100vh; }
+    .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 5; width: 230px; border-right: 1px solid var(--line); background: rgba(9,14,24,.94); display: flex; flex-direction: column; padding: 25px 15px 17px; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 11px 31px; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(86,182,255,.25); border-radius: 10px; background: linear-gradient(145deg,rgba(66,137,255,.22),rgba(64,208,218,.09)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 23px rgba(66,137,255,.1); }
+    .brand-mark svg { width: 20px; height: 20px; }
+    .brand-name { font: 800 15px var(--display); letter-spacing: -.45px; }
+    .brand-name span { color: var(--cyan); }
+    .nav-label { padding: 0 12px; margin: 0 0 10px; color: #58677d; font: 10px var(--mono); letter-spacing: 1.1px; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 4px; }
+    .nav-item { border: 1px solid transparent; background: transparent; border-radius: 8px; color: #8694a9; padding: 10px 11px; display: flex; align-items: center; gap: 11px; text-align: left; cursor: pointer; transition: .18s ease; }
+    .nav-item svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.65; }
+    .nav-item:hover { color: #dce8f7; background: rgba(255,255,255,.035); }
+    .nav-item.active { color: #e7f3ff; background: linear-gradient(90deg,rgba(66,132,255,.14),rgba(74,185,214,.045)); border-color: rgba(83,157,246,.13); }
+    .nav-item.active svg { color: #71aaff; }
+    .nav-item .nav-step { margin-left: auto; color: #4f6078; font: 10px var(--mono); }
+    .sidebar-bottom { margin-top: auto; }
+    .workspace-card { margin: 0 3px 16px; padding: 13px 12px; border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(145deg,rgba(30,46,69,.55),rgba(16,24,38,.65)); }
+    .workspace-top { display:flex; align-items:center; justify-content:space-between; margin-bottom: 9px; font-size: 11px; color:#aab7c8; }
+    .live-dot { width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px #50d6a5; }
+    .workspace-company { font: 600 13px var(--display); }
+    .workspace-plan { color:var(--muted);font-size:10px;margin-top:4px; }
+    .user-row { border-top:1px solid var(--line); padding:15px 8px 0; display:flex; align-items:center; gap:10px; }
+    .avatar { display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(145deg,#274469,#18293e);border:1px solid rgba(113,170,255,.2);color:#b6d5ff;font-size:10px;font-weight:700; }
+    .profile-trigger { flex:0 0 auto;padding:0;cursor:pointer; }
+    .profile-trigger:hover { filter:brightness(1.12); }
+    .user-info { flex:1;min-width:0; }
+    .user-info strong { display:block;font-size:11px;font-weight:600; }
+    .user-info span { color:var(--muted);font-size:10px; }
+    .user-row button { border:0;background:none;color:#77869b;cursor:pointer; }
+    .main { margin-left:230px; min-height:100vh; }
+    .topbar { height:66px; border-bottom:1px solid var(--line); padding:0 34px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4; background:rgba(8,13,23,.82); backdrop-filter:blur(18px); }
+    .crumb { color:var(--muted);font-size:12px; }
+    .crumb b { color:#dce6f4;font-weight:500; }
+    .top-actions { display:flex;align-items:center;gap:13px; }
+    .period-select { border:1px solid var(--line-strong);border-radius:7px;background:#0d1421;color:#aebbd0;padding:8px 10px;font-size:11px;outline:none; }
+    .icon-button { position:relative;width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:#0d1421;color:#94a4ba;display:grid;place-items:center;cursor:pointer; }
+    .icon-button svg { width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7; }
+    .theme-button svg { width:16px;height:16px; }
+    .notification-dot { position:absolute;width:5px;height:5px;border:1px solid var(--bg);border-radius:50%;background:var(--cyan);top:6px;right:7px; }
+    .page { max-width:1500px;margin:0 auto;padding:29px 34px 48px; }
+    .page-head { display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin-bottom:23px; }
+    .eyebrow { color:var(--cyan);font:10px var(--mono);letter-spacing:1.15px;text-transform:uppercase;margin-bottom:7px; }
+    h1 { font:700 23px var(--display);letter-spacing:-.65px;margin:0;color:#edf3fc; }
+    .subtitle { margin:7px 0 0;color:var(--muted);font-size:12px; }
+    .head-actions { display:flex;gap:9px;align-items:center; }
+    .button { border:1px solid var(--line-strong);border-radius:7px;background:#0e1624;color:#b9c7d9;padding:9px 12px;display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;cursor:pointer;transition:.18s; }
+    .button:hover { border-color:rgba(91,160,255,.38);background:#121e30;color:white; }
+    .button svg { width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8; }
+    .button.primary { border-color:rgba(87,153,255,.38);background:linear-gradient(100deg,#2866cb,#246ca7);color:white;box-shadow:0 5px 18px rgba(37,102,203,.17); }
+    .button.primary:hover { filter:brightness(1.12); }
+    .button:disabled { opacity:.38;cursor:not-allowed; }
+    .card { border:1px solid var(--line);border-radius:11px;background:linear-gradient(145deg,rgba(16,25,39,.92),rgba(12,19,31,.97));box-shadow:0 9px 28px rgba(0,0,0,.11); }
+    .metric-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:15px; }
+    .metric { padding:17px 17px 15px;position:relative;overflow:hidden; }
+    .metric:after { content:"";position:absolute;right:-26px;top:-48px;width:100px;height:100px;border-radius:50%;background:var(--glow,rgba(83,153,255,.08));filter:blur(30px); }
+    .metric-label { color:#91a0b4;font-size:11px;display:flex;align-items:center;gap:6px; }
+    .info { display:inline-grid;place-items:center;border:1px solid #3c4c62;border-radius:50%;width:13px;height:13px;color:#75849a;font:9px var(--mono); }
+    .metric-value-row { display:flex;align-items:baseline;gap:8px;margin:13px 0 8px; }
+    .metric-value { font:700 29px var(--display);letter-spacing:-1px; }
+    .metric-unit { color:#93a1b5;font-size:13px;font-weight:500; }
+    .metric-change { color:var(--green);font-size:10px;font-weight:600;display:flex;align-items:center;gap:4px; }
+    .metric-change.bad { color:var(--red); }
+    .metric-foot { color:#738197;font-size:10px; }
+    .metric-progress { height:3px;background:#1c293a;border-radius:3px;margin:12px 0 8px;overflow:hidden; }
+    .metric-progress span { display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#4c86ff,#56ceda); }
+    .metric-risk { --glow:rgba(255,104,126,.12); }
+    .metric-risk .metric-value { color:#ffb0a8; }
+    .dashboard-grid { display:grid;grid-template-columns:minmax(0,1.68fr) minmax(260px,.92fr);gap:14px;margin-bottom:15px; }
+    .card-head { display:flex;align-items:flex-start;justify-content:space-between;padding:17px 18px 0; }
+    .card-title { font:600 13px var(--display);color:#dce6f4; }
+    .card-subtitle { color:#75849a;font-size:10px;margin-top:5px; }
+    .chart-legend { display:flex;align-items:center;gap:13px;color:#8998ad;font-size:10px; }
+    .legend-item { display:flex;align-items:center;gap:6px; }
+    .legend-swatch { width:7px;height:7px;border-radius:50%;background:#669bff; }
+    .legend-swatch.cyan { background:#55d0d9; }
+    .chart-wrap { padding:17px 13px 8px 9px; }
+    .chart-wrap svg { display:block;width:100%;height:auto;overflow:visible; }
+    .chart-gridline { stroke:rgba(152,176,207,.1);stroke-dasharray:3 5; }
+    .chart-label { fill:#65748a;font:9px var(--mono); }
+    .chart-line { fill:none;stroke:#6a9aff;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round; }
+    .chart-area { fill:url(#riskGradient); }
+    .chart-line-secondary { fill:none;stroke:#57d0d6;stroke-width:1.7;stroke-dasharray:4 4; }
+    .chart-point { fill:#101a29;stroke:#77a4ff;stroke-width:2;cursor:pointer; }
+    .chart-tooltip { fill:#dce8fa;font:9px var(--mono); }
+    .exposure-card { padding-bottom:16px; }
+    .exposure-total { display:flex;align-items:baseline;gap:7px;padding:21px 18px 0; }
+    .exposure-total strong { font:700 31px var(--display);letter-spacing:-1px; }
+    .exposure-total span { color:#8594a9;font-size:11px; }
+    .exposure-note { padding:5px 18px 17px;color:#6f7f95;font-size:10px; }
+    .exposure-bar { height:7px;margin:0 18px 14px;border-radius:6px;display:flex;overflow:hidden;gap:2px; }
+    .exposure-bar span:nth-child(1){background:#ff7182;width:34%}.exposure-bar span:nth-child(2){background:#ffa767;width:27%}.exposure-bar span:nth-child(3){background:#edc767;width:23%}.exposure-bar span:nth-child(4){background:#6979a8;width:16%}
+    .exposure-legend { display:grid;gap:11px;padding:0 18px; }
+    .exposure-item { display:flex;align-items:center;justify-content:space-between;color:#95a3b6;font-size:10px; }
+    .exposure-item span:first-child { display:flex;align-items:center;gap:8px; }
+    .exposure-item strong { font:11px var(--mono);color:#d7e1ef; }
+    .exposure-dot { width:6px;height:6px;border-radius:50%; }
+    .lower-grid { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,.85fr);gap:14px; }
+    .table-card { overflow:hidden; }
+    .table-toolbar { display:flex;align-items:center;justify-content:space-between;padding:15px 17px 12px; }
+    .table-link { border:0;background:none;color:#78a8ff;font-size:10px;cursor:pointer;padding:5px; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%;border-collapse:collapse;text-align:left;white-space:nowrap; }
+    th { color:#68788e;font:9px var(--mono);letter-spacing:.55px;text-transform:uppercase;padding:10px 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line); }
+    td { color:#adbacb;font-size:10px;padding:11px 16px;border-bottom:1px solid rgba(157,181,213,.07); }
+    tbody tr:last-child td { border-bottom:0; }
+    tbody tr:hover { background:rgba(122,165,226,.035); }
+    .risk-name { display:flex;align-items:center;gap:8px;color:#d1ddeb;font-weight:500; }
+    .risk-icon { display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:rgba(255,107,125,.09);color:#ff8291;font-size:10px; }
+    .risk-icon.orange { background:rgba(255,174,100,.09);color:#ffbf69; }
+    .risk-icon.blue { background:rgba(99,151,255,.1);color:#83aaff; }
+    .status { display:inline-flex;align-items:center;gap:5px;border:1px solid currentColor;border-radius:5px;padding:3px 7px;font-size:9px;font-weight:600; }
+    .status:before { content:"";width:5px;height:5px;border-radius:50%;background:currentColor; }
+    .status.critical { color:#ff8491;background:rgba(255,107,125,.06);border-color:rgba(255,107,125,.2); }
+    .status.high { color:#ffbd72;background:rgba(255,181,94,.05);border-color:rgba(255,181,94,.2); }
+    .status.medium { color:#e9cf79;background:rgba(233,207,121,.05);border-color:rgba(233,207,121,.2); }
+    .status.low { color:#74d6b3;background:rgba(80,214,165,.05);border-color:rgba(80,214,165,.18); }
+    .score-cell { color:#f0a7a9;font:11px var(--mono); }
+    .insight-card { padding:17px;position:relative;overflow:hidden; }
+    .insight-card:before { content:"";position:absolute;right:-45px;top:-60px;width:130px;height:130px;background:rgba(56,161,223,.11);filter:blur(46px); }
+    .insight-heading { display:flex;align-items:center;gap:9px;margin-bottom:12px; }
+    .ai-spark { width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#73c8f8;background:linear-gradient(145deg,rgba(61,136,246,.2),rgba(70,211,213,.1));border:1px solid rgba(89,169,230,.17);font-size:14px; }
+    .insight-kicker { color:#65bddf;font:9px var(--mono);letter-spacing:.65px;text-transform:uppercase; }
+    .insight-heading strong { display:block;font:600 12px var(--display);margin-top:2px; }
+    .insight-copy { position:relative;color:#9cabc0;line-height:1.65;font-size:10.5px;margin:0 0 15px; }
+    .insight-highlight { color:#dceafa;font-weight:600; }
+    .insight-impact { display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px; }
+    .insight-impact span { color:#7d8da3;font-size:10px; }
+    .insight-impact strong { color:var(--green);font:600 12px var(--mono); }
+    .view { display:none; }
+    .view.active { display:block;animation:appear .2s ease; }
+    @keyframes appear { from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:translateY(0)} }
+    .toolbar { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+    .filter-select,.budget-input { border:1px solid var(--line-strong);border-radius:7px;background:#0d1421;color:#bccadd;padding:9px 11px;font-size:11px;outline:none; }
+    select:focus,input:focus { border-color:rgba(93,159,255,.55); }
+    .risk-summary { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px; }
+    .summary-box { padding:14px 16px; }
+    .summary-box span { display:block;color:#8493a8;font-size:10px; }
+    .summary-box strong { display:block;font:600 21px var(--display);margin-top:8px; }
+    .risk-table-card .table-toolbar { padding:16px 18px; }
+    .risk-table-card th,.risk-table-card td { padding-left:18px;padding-right:18px; }
+    .probability { display:flex;align-items:center;gap:8px; }
+    .mini-bar { width:50px;height:4px;background:#1a2839;border-radius:4px;overflow:hidden; }
+    .mini-bar i { display:block;height:100%;background:linear-gradient(90deg,#588cff,#5dd0d8);border-radius:4px; }
+    .risk-footer { padding:12px 18px;color:#718198;font-size:10px;border-top:1px solid var(--line); }
+    .insights-grid { display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,.8fr);gap:14px; }
+    .ai-report { padding:20px; }
+    .report-top { display:flex;align-items:center;gap:10px;margin-bottom:19px; }
+    .report-top .ai-spark { width:34px;height:34px;font-size:17px; }
+    .report-top strong { display:block;font:600 13px var(--display); }
+    .report-top span { display:block;margin-top:3px;color:#77889f;font-size:10px; }
+    .report-badge { margin-left:auto;color:#75ceb8;border:1px solid rgba(80,214,165,.2);background:rgba(80,214,165,.05);border-radius:5px;padding:5px 7px;font:9px var(--mono); }
+    .report-section { padding:15px 0;border-top:1px solid var(--line); }
+    .report-section h3 { margin:0 0 8px;color:#dce6f4;font:600 12px var(--display); }
+    .report-section p { color:#9aa9bd;line-height:1.8;font-size:11px;margin:0; }
+    .report-section strong { color:#e5edf7;font-weight:600; }
+    .action-list { display:grid;gap:10px;margin-top:11px; }
+    .action-item { display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.012); }
+    .action-num { width:21px;height:21px;flex:0 0 auto;border:1px solid rgba(91,153,255,.25);border-radius:6px;display:grid;place-items:center;color:#8db3ff;font:10px var(--mono); }
+    .action-item strong { display:block;font-size:11px;font-weight:600;color:#dce7f6; }
+    .action-item span { display:block;color:#8392a7;font-size:10px;line-height:1.5;margin-top:4px; }
+    .action-value { margin-left:auto;white-space:nowrap;color:#67d2ac;font:10px var(--mono); }
+    .side-stack { display:grid;align-content:start;gap:14px; }
+    .priority-card { padding:17px; }
+    .priority-row { display:flex;align-items:center;gap:10px;margin-top:14px; }
+    .priority-number { color:#536780;font:10px var(--mono); }
+    .priority-copy { flex:1; }
+    .priority-copy strong { display:block;font-size:10px;font-weight:500; }
+    .priority-copy span { display:block;color:#75859b;font-size:9px;margin-top:3px; }
+    .priority-risk { color:#ff858e;font:10px var(--mono); }
+    .optimizer-layout { display:grid;grid-template-columns:minmax(0,1.45fr) minmax(270px,.75fr);gap:14px;align-items:start; }
+    .investment-card { overflow:hidden; }
+    .investment-intro { padding:18px 19px;border-bottom:1px solid var(--line); }
+    .investment-intro .card-title { margin-bottom:5px; }
+    .investment-intro p { color:#78889e;font-size:10px;margin:0; }
+    .budget-control { padding:16px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px; }
+    .budget-control label { display:block;color:#d8e3f1;font-size:11px;font-weight:500;margin-bottom:5px; }
+    .budget-control small { color:#7c8ca1;font-size:10px; }
+    .budget-input-wrap { display:flex;align-items:center;gap:7px;color:#91a0b4; }
+    .budget-input { width:124px;text-align:right;font:12px var(--mono);padding:9px; }
+    .investment-options { padding:4px 18px 13px; }
+    .investment-option { display:grid;grid-template-columns:19px minmax(0,1fr) auto auto;align-items:center;gap:11px;padding:13px 3px;border-bottom:1px solid rgba(157,181,213,.07);cursor:pointer; }
+    .investment-option:last-child { border-bottom:0; }
+    .investment-option input { width:14px;height:14px;accent-color:#5795f8;cursor:pointer; }
+    .option-title { color:#d3deed;font-size:11px;font-weight:500; }
+    .option-meta { color:#718199;font-size:9px;margin-top:4px; }
+    .option-cost { color:#cad5e4;font:10px var(--mono);white-space:nowrap; }
+    .option-reduction { color:#60d1a8;font:10px var(--mono);white-space:nowrap; }
+    .optimizer-side { display:grid;gap:13px; }
+    .budget-card { padding:17px; }
+    .budget-total { font:700 27px var(--display);letter-spacing:-.5px;margin:14px 0 3px; }
+    .budget-caption { color:#7e8da2;font-size:10px; }
+    .budget-progress { height:6px;background:#1c293a;border-radius:5px;overflow:hidden;margin:14px 0 8px; }
+    .budget-progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#4c84fa,#57d0db);transition:width .25s; }
+    .budget-remaining { display:flex;justify-content:space-between;color:#8090a6;font-size:10px; }
+    .projected-card { padding:18px; }
+    .projected-score { display:flex;align-items:baseline;justify-content:space-between;margin:16px 0 7px; }
+    .projected-score strong { font:700 34px var(--display);color:#f0b0a4;letter-spacing:-1px; }
+    .projected-score span { color:#6ad3ad;font:11px var(--mono); }
+    .projected-gauge { height:5px;background:#1d2a39;border-radius:5px;overflow:hidden; }
+    .projected-gauge i { display:block;height:100%;width:0;background:linear-gradient(90deg,#e68c7b,#f5bb79);transition:width .25s; }
+    .projected-foot { display:flex;justify-content:space-between;margin-top:8px;color:#77879c;font-size:9px; }
+    .recommendation { display:flex;gap:9px;padding:12px;border-radius:8px;border:1px solid rgba(82,194,157,.14);background:rgba(68,178,143,.035);color:#83bba8;font-size:10px;line-height:1.6; }
+    .recommendation svg { width:15px;height:15px;flex:0 0 auto;stroke:#61d0a9;fill:none;stroke-width:1.8;margin-top:1px; }
+    .simulation-layout { display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.72fr);gap:14px;align-items:start; }
+    .sim-chart-card { padding-bottom:12px; }
+    .sim-chart { padding:17px 15px 10px; }
+    .sim-chart svg { width:100%;height:auto; }
+    .slider-card { padding:18px; }
+    .slider-value { margin:17px 0 10px;font:700 29px var(--display);letter-spacing:-.8px; }
+    .range { width:100%;height:5px;accent-color:#669aff;cursor:pointer; }
+    .range-labels { display:flex;justify-content:space-between;color:#74849a;font:9px var(--mono);margin-top:6px; }
+    .sim-result { border-top:1px solid var(--line);margin-top:17px;padding-top:14px; }
+    .sim-result-row { display:flex;justify-content:space-between;align-items:center;margin:10px 0;color:#8493a8;font-size:10px; }
+    .sim-result-row strong { color:#dce6f3;font:11px var(--mono); }
+    .sim-result-row strong.green { color:#65d1a9; }
+    .scenario-list { padding:17px; }
+    .scenario-row { display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px;padding:11px 0;border:0;border-bottom:1px solid rgba(157,181,213,.07);width:100%;background:transparent;text-align:left;cursor:pointer;font:inherit; }
+    .scenario-row:hover strong { color:#8fb6ff; }
+    .scenario-row:last-child { border:0; }
+    .scenario-row strong { color:#d2dfed;font-size:10px;font-weight:500; }
+    .scenario-row span { color:#74859a;font-size:9px;display:block;margin-top:4px; }
+    .scenario-row b { font:10px var(--mono);color:#6dd2ad; }
+    .mobile-menu { display:none; }
+    .toast { position:fixed;right:22px;bottom:22px;z-index:10;padding:11px 15px;background:#132236;border:1px solid rgba(100,161,240,.25);border-radius:8px;color:#dce9f8;font-size:11px;box-shadow:0 12px 38px rgba(0,0,0,.4);opacity:0;transform:translateY(8px);pointer-events:none;transition:.22s; }
+    .toast.show { opacity:1;transform:translateY(0); }
+    .profile-dialog { width:min(480px,calc(100vw - 28px));max-height:calc(100vh - 32px);padding:0;border:1px solid var(--line-strong);border-radius:14px;background:var(--panel);color:var(--text);box-shadow:0 24px 80px rgba(5,15,30,.28); }
+    .profile-dialog::backdrop { background:rgba(13,25,43,.55);backdrop-filter:blur(4px); }
+    .profile-header { display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:21px 22px 17px;border-bottom:1px solid var(--line); }
+    .profile-header h2 { margin:0;color:var(--text);font:700 17px var(--display); }
+    .profile-header p { margin:5px 0 0;color:var(--muted);font-size:11px; }
+    .profile-close { display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);font-size:19px;line-height:1;cursor:pointer; }
+    .profile-form { padding:19px 22px 21px; }
+    .profile-identity { display:flex;align-items:center;gap:12px;padding:0 0 18px; }
+    .profile-large-avatar { display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,#e2edff,#edf7fb);border:1px solid rgba(73,128,210,.22);color:#315b94;font:700 13px var(--display); }
+    .profile-identity strong { display:block;color:var(--text);font:600 12px var(--display); }
+    .profile-identity span { display:block;margin-top:4px;color:var(--muted);font-size:10px; }
+    .profile-fields { display:grid;grid-template-columns:1fr 1fr;gap:13px; }
+    .profile-field { display:grid;gap:6px; }
+    .profile-field.full { grid-column:1/-1; }
+    .profile-field label { color:var(--muted);font-size:10px;font-weight:600; }
+    .profile-field input { width:100%;min-width:0;padding:10px 11px;border:1px solid var(--line-strong);border-radius:7px;background:var(--panel-2);color:var(--text);font-size:11px;outline:none; }
+    .profile-field input:focus { border-color:rgba(93,159,255,.65);box-shadow:0 0 0 3px rgba(93,159,255,.1); }
+    .profile-footer { display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:15px;border-top:1px solid var(--line); }
+    :root[data-theme="dark"] .profile-dialog { background:#0d1421;color:#e9f0fa; }
+    :root[data-theme="dark"] .profile-header h2,:root[data-theme="dark"] .profile-identity strong { color:#e9f0fa; }
+    :root[data-theme="dark"] .profile-field input { background:#101a29;color:#e9f0fa; }
+    :root[data-theme="dark"] .profile-large-avatar { background:linear-gradient(145deg,#274469,#18293e);border-color:rgba(113,170,255,.2);color:#b6d5ff; }
+    :root[data-theme="light"] body { background:var(--bg); }
+    :root[data-theme="light"] .sidebar { background:rgba(249,251,255,.96); }
+    :root[data-theme="light"] .topbar { background:rgba(249,251,255,.88); }
+    :root[data-theme="light"] .nav-label { color:#74839a; }
+    :root[data-theme="light"] .nav-item { color:#56677f; }
+    :root[data-theme="light"] .nav-item:hover { color:#243a59;background:rgba(49,102,177,.055); }
+    :root[data-theme="light"] .nav-item.active { color:#245da8;background:linear-gradient(90deg,rgba(66,132,255,.12),rgba(74,185,214,.045));border-color:rgba(83,125,194,.17); }
+    :root[data-theme="light"] .nav-item .nav-step { color:#8190a5; }
+    :root[data-theme="light"] .workspace-card { background:linear-gradient(145deg,#f2f7ff,#fbfdff); }
+    :root[data-theme="light"] .workspace-top { color:#64748b; }
+    :root[data-theme="light"] .avatar { background:linear-gradient(145deg,#e2edff,#edf7fb);border-color:rgba(73,128,210,.22);color:#315b94; }
+    :root[data-theme="light"] .user-row button { color:#68788e; }
+    :root[data-theme="light"] .crumb b { color:#253750; }
+    :root[data-theme="light"] .period-select,
+    :root[data-theme="light"] .icon-button,
+    :root[data-theme="light"] .filter-select,
+    :root[data-theme="light"] .budget-input { background:#fff;color:#34445c; }
+    :root[data-theme="light"] .icon-button { color:#53647c; }
+    :root[data-theme="light"] h1 { color:#17253a; }
+    :root[data-theme="light"] .button { background:#fff;color:#40516a; }
+    :root[data-theme="light"] .button:hover { background:#f1f6ff;color:#234e86; }
+    :root[data-theme="light"] .button.primary { background:linear-gradient(100deg,#2866cb,#246ca7);color:#fff; }
+    :root[data-theme="light"] .card { background:linear-gradient(145deg,#fff,#fbfcff);box-shadow:0 5px 20px rgba(36,61,96,.055); }
+    :root[data-theme="light"] .metric-label { color:#56677e; }
+    :root[data-theme="light"] .metric-unit { color:#586a82; }
+    :root[data-theme="light"] .metric-foot,
+    :root[data-theme="light"] .card-subtitle,
+    :root[data-theme="light"] .exposure-note,
+    :root[data-theme="light"] .budget-caption,
+    :root[data-theme="light"] .projected-foot { color:#6f7e92; }
+    :root[data-theme="light"] .card-title,
+    :root[data-theme="light"] .risk-name,
+    :root[data-theme="light"] .insight-heading strong,
+    :root[data-theme="light"] .report-top strong,
+    :root[data-theme="light"] .report-section h3,
+    :root[data-theme="light"] .report-section strong,
+    :root[data-theme="light"] .action-item strong,
+    :root[data-theme="light"] .option-title,
+    :root[data-theme="light"] .scenario-row strong { color:#263750; }
+    :root[data-theme="light"] .info { border-color:#9ba9bc;color:#62728a; }
+    :root[data-theme="light"] .metric-progress,
+    :root[data-theme="light"] .mini-bar,
+    :root[data-theme="light"] .budget-progress,
+    :root[data-theme="light"] .projected-gauge { background:#e7edf5; }
+    :root[data-theme="light"] .chart-gridline { stroke:rgba(70,95,132,.15); }
+    :root[data-theme="light"] .chart-label { fill:#718199; }
+    :root[data-theme="light"] .chart-point { fill:#fff; }
+    :root[data-theme="light"] .chart-tooltip { fill:#31435d; }
+    :root[data-theme="light"] .exposure-total span,
+    :root[data-theme="light"] .exposure-item { color:#617188; }
+    :root[data-theme="light"] .exposure-item strong { color:#34455e; }
+    :root[data-theme="light"] th { color:#6a7b92; }
+    :root[data-theme="light"] td { color:#4c5d74; }
+    :root[data-theme="light"] tbody tr:hover { background:rgba(76,122,190,.045); }
+    :root[data-theme="light"] .risk-name { color:#2e4059; }
+    :root[data-theme="light"] .status.critical { color:#c84254; }
+    :root[data-theme="light"] .status.high { color:#ae661b; }
+    :root[data-theme="light"] .status.medium { color:#8d7417; }
+    :root[data-theme="light"] .status.low { color:#248260; }
+    :root[data-theme="light"] .insight-copy,
+    :root[data-theme="light"] .report-section p { color:#53647b; }
+    :root[data-theme="light"] .insight-highlight { color:#253c5c; }
+    :root[data-theme="light"] .toolbar .filter-select { color:#3d4e66; }
+    :root[data-theme="light"] .summary-box span,
+    :root[data-theme="light"] .risk-footer,
+    :root[data-theme="light"] .report-top span,
+    :root[data-theme="light"] .option-meta,
+    :root[data-theme="light"] .budget-control small,
+    :root[data-theme="light"] .budget-remaining,
+    :root[data-theme="light"] .sim-result-row,
+    :root[data-theme="light"] .scenario-row span { color:#6c7c91; }
+    :root[data-theme="light"] .summary-box strong,
+    :root[data-theme="light"] .sim-result-row strong { color:#283a54; }
+    :root[data-theme="light"] .action-item { background:rgba(49,102,177,.025); }
+    :root[data-theme="light"] .action-num { color:#356cb5; }
+    :root[data-theme="light"] .investment-option:hover { background:rgba(49,102,177,.035); }
+    :root[data-theme="light"] .option-cost { color:#455770; }
+    :root[data-theme="light"] .scenario-row:hover { background:rgba(49,102,177,.035); }
+    :root[data-theme="light"] .scenario-row b { color:#248260; }
+    :root[data-theme="light"] #simMarker { fill:#fff; }
+    :root[data-theme="light"] .toast { background:#fff;border-color:rgba(66,120,195,.25);color:#263750;box-shadow:0 12px 38px rgba(35,57,89,.16); }
+    @media(max-width:1100px) {
+      .sidebar{width:205px}.main{margin-left:205px}.topbar{padding:0 25px}.page{padding:25px}
+      .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .dashboard-grid,.lower-grid{grid-template-columns:minmax(0,1.35fr) minmax(240px,.8fr)}
+    }
+    @media(max-width:780px) {
+      .sidebar{width:58px;padding:18px 8px}.brand{padding:0 3px 27px;justify-content:center}.brand-name,.nav-label,.nav-item span,.nav-step,.sidebar-bottom .workspace-card,.user-info,.user-row button{display:none}.nav-item{justify-content:center;padding:11px 0}.nav-item svg{width:18px;height:18px}.user-row{justify-content:center;padding:13px 0 0}.main{margin-left:58px}.topbar{height:58px;padding:0 16px}.page{padding:22px 16px 36px}.dashboard-grid,.lower-grid,.insights-grid,.optimizer-layout,.simulation-layout{grid-template-columns:1fr}.risk-summary{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:520px) {
+      .page-head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}.head-actions .button{flex:1;justify-content:center}.top-actions{gap:7px}.period-select{max-width:117px;padding:7px;font-size:10px}.crumb{font-size:10px}
+      .metric-grid{gap:9px}.metric{padding:13px}.metric-value{font-size:24px}.metric-label{font-size:10px}.metric-foot{font-size:9px}
+      .card-head{padding-left:14px;padding-right:14px}.chart-legend{gap:8px;font-size:9px}.risk-summary{gap:9px}.summary-box{padding:12px}.risk-table-card th,.risk-table-card td{padding-left:12px;padding-right:12px}.budget-control{align-items:flex-start;flex-direction:column}.investment-option{grid-template-columns:16px minmax(0,1fr) auto;gap:8px}.option-reduction{grid-column:2;grid-row:2}.option-cost{grid-column:3;grid-row:1 / span 2}.toolbar{width:100%}.toolbar .filter-select{flex:1}.head-actions .button{font-size:10px;padding:8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#72baff" stroke-width="1.6"><path d="M12 2.8 20 6v5.2c0 5-3.4 8.3-8 10-4.6-1.7-8-5-8-10V6l8-3.2Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
+        <div class="brand-name">CyberQuant <span>AI</span></div>
+      </div>
+      <div class="nav-label">Intelligence</div>
+      <nav class="nav-list" aria-label="Main navigation">
+        <button class="nav-item active" data-view="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="14" width="8" height="7" rx="1.5"/></svg><span>Dashboard</span><span class="nav-step">01</span></button>
+        <button class="nav-item" data-view="risks"><svg viewBox="0 0 24 24"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v4.5M12 17h.01"/></svg><span>Risk analysis</span><span class="nav-step">02</span></button>
+        <button class="nav-item" data-view="insights"><svg viewBox="0 0 24 24"><path d="m12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg><span>AI insights</span><span class="nav-step">03</span></button>
+        <button class="nav-item" data-view="optimizer"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M7 15l4-4 3 2 6-7"/><path d="M16 6h4v4"/></svg><span>Investment optimizer</span><span class="nav-step">04</span></button>
+        <button class="nav-item" data-view="simulation"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16"/><path d="m6 16 4-4 3 2 6-7"/><circle cx="19" cy="7" r="2"/></svg><span>What-if simulation</span><span class="nav-step">05</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="nav-label">Workspace</div>
+        <div class="workspace-card">
+          <div class="workspace-top"><span>PRODUCTION</span><i class="live-dot"></i></div>
+          <div class="workspace-company">Northstar Financial</div>
+          <div class="workspace-plan">Enterprise plan · SOC 2 scope</div>
+        </div>
+        <div class="user-row">
+          <button class="avatar profile-trigger" type="button" data-open-profile aria-label="Open Alex Johnson’s profile">AJ</button>
+          <div class="user-info"><strong id="sidebarUserName">Alex Johnson</strong><span id="sidebarUserRole">Security lead</span></div>
+          <button type="button" data-open-profile aria-label="Account settings">···</button>
+        </div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">Northstar Financial <span style="color:#53627a">/</span> <b id="breadcrumb">Dashboard</b></div>
+        <div class="top-actions">
+          <select class="period-select" id="periodSelect" aria-label="Reporting period">
+            <option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option>
+          </select>
+          <button class="icon-button theme-button" id="themeToggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode"></button>
+          <button class="icon-button" id="notificationButton" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><i class="notification-dot"></i></button>
+          <button class="avatar profile-trigger" type="button" data-open-profile aria-label="Open Alex Johnson’s profile">AJ</button>
+        </div>
+      </header>
+      <div class="page">
+        <section class="view active" id="view-dashboard">
+          <div class="page-head">
+            <div><div class="eyebrow">Security posture · live</div><h1>Good morning, Alex</h1><p class="subtitle">Here’s your organization’s cyber risk at a glance.</p></div>
+            <div class="head-actions">
+              <button class="button" id="exportButton"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M5 16v4h14v-4"/></svg>Export report</button>
+              <button class="button primary" data-goto="optimizer"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>Optimize budget</button>
+            </div>
+          </div>
+          <div class="metric-grid">
+            <article class="card metric metric-risk"><div class="metric-label">Overall cyber risk score <span class="info" title="Composite score across likelihood, business impact, and security controls">i</span></div><div class="metric-value-row"><strong class="metric-value">68</strong><span class="metric-unit">/ 100</span><span class="metric-change">↓ 8 pts</span></div><div class="metric-foot">Elevated · improved from last month</div><div class="metric-progress"><span style="width:68%;background:linear-gradient(90deg,#e5777e,#efb476)"></span></div></article>
+            <article class="card metric" style="--glow:rgba(255,173,98,.11)"><div class="metric-label">Financial risk exposure <span class="info" title="Estimated annualized loss exposure from active cyber risks">i</span></div><div class="metric-value-row"><strong class="metric-value">$2.4</strong><span class="metric-unit">M</span><span class="metric-change bad">↑ 4.2%</span></div><div class="metric-foot">Estimated annualized loss · P90</div><div class="metric-progress"><span style="width:61%;background:linear-gradient(90deg,#f19b67,#ffd078)"></span></div></article>
+            <article class="card metric" style="--glow:rgba(255,105,124,.09)"><div class="metric-label">Critical vulnerabilities</div><div class="metric-value-row"><strong class="metric-value">12</strong><span class="metric-unit">open</span><span class="metric-change">↓ 3 this week</span></div><div class="metric-foot">4 exposed to the public internet</div><div class="metric-progress"><span style="width:35%;background:linear-gradient(90deg,#fa7787,#f6ae75)"></span></div></article>
+            <article class="card metric" style="--glow:rgba(76,214,168,.1)"><div class="metric-label">Security coverage</div><div class="metric-value-row"><strong class="metric-value">84</strong><span class="metric-unit">%</span><span class="metric-change">↑ 6 pts</span></div><div class="metric-foot">Across 1,248 inventoried assets</div><div class="metric-progress"><span style="width:84%;background:linear-gradient(90deg,#3ecda1,#68d9dc)"></span></div></article>
+          </div>
+          <div class="dashboard-grid">
+            <article class="card">
+              <div class="card-head"><div><div class="card-title">Risk trend</div><div class="card-subtitle" id="trendSubtitle">Risk score vs. risk appetite · trailing 30 days</div></div><div class="chart-legend"><span class="legend-item"><i class="legend-swatch"></i>Risk score</span><span class="legend-item"><i class="legend-swatch cyan"></i>Appetite</span></div></div>
+              <div class="chart-wrap"><svg viewBox="0 0 680 220" role="img" aria-label="Risk score trend declining from 82 to 68 over six months">
+                <defs><linearGradient id="riskGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6599ff" stop-opacity=".22"/><stop offset="100%" stop-color="#6599ff" stop-opacity="0"/></linearGradient></defs>
+                <line class="chart-gridline" x1="48" y1="28" x2="660" y2="28"/><line class="chart-gridline" x1="48" y1="72" x2="660" y2="72"/><line class="chart-gridline" x1="48" y1="116" x2="660" y2="116"/><line class="chart-gridline" x1="48" y1="160" x2="660" y2="160"/>
+                <text class="chart-label" x="11" y="31">100</text><text class="chart-label" x="18" y="75">75</text><text class="chart-label" x="18" y="119">50</text><text class="chart-label" x="18" y="163">25</text>
+                <path class="chart-area" id="trendArea" d="M55 60 C95 62 104 66 155 65 S220 70 260 68 S326 75 365 74 S433 79 470 78 S536 83 575 82 S627 84 653 84 L653 160 L55 160Z"/>
+                <path class="chart-line-secondary" d="M55 108 C160 108 260 108 365 108 S540 108 653 108"/>
+                <path class="chart-line" id="trendLine" d="M55 60 C97 62 113 65 155 65 C197 65 218 68 260 68 C302 68 323 74 365 74 C407 74 428 78 470 78 C512 78 533 82 575 82 C617 82 632 84 653 84"/>
+                <g id="trendPoints"><circle class="chart-point" cx="55" cy="60" r="3.5"/><circle class="chart-point" cx="155" cy="65" r="3.5"/><circle class="chart-point" cx="260" cy="68" r="3.5"/><circle class="chart-point" cx="365" cy="74" r="3.5"/><circle class="chart-point" cx="470" cy="78" r="3.5"/><circle class="chart-point" cx="575" cy="82" r="3.5"/><circle class="chart-point" cx="653" cy="84" r="4"/></g>
+                <text class="chart-tooltip" id="trendValue" x="625" y="75">68</text>
+                <text class="chart-label trend-label" x="48" y="188">W−6</text><text class="chart-label trend-label" x="150" y="188">W−5</text><text class="chart-label trend-label" x="255" y="188">W−4</text><text class="chart-label trend-label" x="359" y="188">W−3</text><text class="chart-label trend-label" x="464" y="188">W−2</text><text class="chart-label trend-label" x="569" y="188">W−1</text><text class="chart-label trend-label" x="638" y="188">NOW</text>
+              </svg></div>
+            </article>
+            <article class="card exposure-card">
+              <div class="card-head"><div><div class="card-title">Exposure by severity</div><div class="card-subtitle">Estimated annualized loss</div></div><span class="info" title="Modeled loss estimates by risk severity">i</span></div>
+              <div class="exposure-total"><strong>$2.4M</strong><span>total exposure</span></div><div class="exposure-note">Modeled annualized loss at 90% confidence</div>
+              <div class="exposure-bar"><span></span><span></span><span></span><span></span></div>
+              <div class="exposure-legend">
+                <div class="exposure-item"><span><i class="exposure-dot" style="background:#ff7182"></i>Critical</span><strong>$816K</strong></div>
+                <div class="exposure-item"><span><i class="exposure-dot" style="background:#ffa767"></i>High</span><strong>$648K</strong></div>
+                <div class="exposure-item"><span><i class="exposure-dot" style="background:#edc767"></i>Medium</span><strong>$552K</strong></div>
+                <div class="exposure-item"><span><i class="exposure-dot" style="background:#6979a8"></i>Low</span><strong>$384K</strong></div>
+              </div>
+            </article>
+          </div>
+          <div class="lower-grid">
+            <article class="card table-card">
+              <div class="table-toolbar"><div><div class="card-title">Top identified risks</div><div class="card-subtitle">Highest priority items across your attack surface</div></div><button class="table-link" data-goto="risks">View all risks →</button></div>
+              <div class="table-wrap"><table><thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Score</th><th>Severity</th></tr></thead><tbody id="topRiskRows"></tbody></table></div>
+            </article>
+            <article class="card insight-card">
+              <div class="insight-heading"><div class="ai-spark">✳</div><div><div class="insight-kicker">AI-generated · updated 8 min ago</div><strong>One action, outsized impact</strong></div></div>
+              <p class="insight-copy">Your <span class="insight-highlight">unpatched internet-facing VPN gateway</span> accounts for 31% of modeled financial exposure. Prioritizing the recommended patch would reduce annualized exposure by an estimated <span class="insight-highlight">$420K</span>.</p>
+              <div class="insight-impact"><span>Expected risk reduction</span><strong>−18 points</strong></div>
+              <button class="table-link" style="padding:12px 0 0" data-goto="insights">Explore AI insights →</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-risks">
+          <div class="page-head"><div><div class="eyebrow">Quantify risk · 02 / 05</div><h1>Risk analysis</h1><p class="subtitle">Understand likelihood, business impact, and financial risk across your environment.</p></div><div class="toolbar"><select id="severityFilter" class="filter-select" aria-label="Filter by severity"><option value="all">All severities</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select><select id="sortRisk" class="filter-select" aria-label="Sort risks"><option value="score">Highest score</option><option value="impact">Highest impact</option><option value="probability">Highest probability</option></select></div></div>
+          <div class="risk-summary"><div class="card summary-box"><span>Risks identified</span><strong>24</strong></div><div class="card summary-box"><span>Critical / high</span><strong style="color:#ff9b8d">9</strong></div><div class="card summary-box"><span>Exposed assets</span><strong>37</strong></div><div class="card summary-box"><span>Modeled exposure</span><strong>$2.4M</strong></div></div>
+          <article class="card risk-table-card"><div class="table-toolbar"><div><div class="card-title">Enterprise risk register</div><div class="card-subtitle">Quantified threat scenarios · calibrated against your industry</div></div><button class="button" id="riskExport">Export CSV</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Risk scenario</th><th>Probability</th><th>Business impact</th><th>Risk score</th><th>Severity</th><th>Asset scope</th></tr></thead><tbody id="allRiskRows"></tbody></table></div><div class="risk-footer" id="riskCount"></div></article>
+        </section>
+
+        <section class="view" id="view-insights">
+          <div class="page-head"><div><div class="eyebrow">AI analysis · 03 / 05</div><h1>AI-powered insights</h1><p class="subtitle">Explainable analysis connecting threat signals to business impact and practical action.</p></div><button class="button" id="refreshInsight"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg>Refresh analysis</button></div>
+          <div class="insights-grid">
+            <article class="card ai-report">
+              <div class="report-top"><div class="ai-spark">✳</div><div><strong>Executive risk intelligence brief</strong><span>Generated from 1,248 assets, 24 risk scenarios, and current control posture</span></div><span class="report-badge">CONFIDENCE 91%</span></div>
+              <div class="report-section"><h3>What needs your attention</h3><p>The <strong>unpatched internet-facing VPN gateway</strong> is your highest-priority exposure. With a 72% annual likelihood and a potential $1.1M business impact, it contributes approximately $792K in modeled annualized loss. Active exploitation of this vulnerability class has increased across financial services peers.</p></div>
+              <div class="report-section"><h3>Why this matters now</h3><p>Phishing-enabled account takeover is the second-largest contributor at an estimated <strong>$510K annualized loss</strong>. Your 84% security coverage is strong overall, but 16% of assets remain outside endpoint detection, creating a meaningful visibility gap. These two scenarios represent over half of your modeled exposure.</p></div>
+              <div class="report-section"><h3>Recommended actions</h3><div class="action-list">
+                <div class="action-item"><div class="action-num">01</div><div><strong>Patch and isolate the VPN gateway</strong><span>Apply vendor security update, restrict administrative access, and validate external exposure within 72 hours.</span></div><div class="action-value">−18 pts</div></div>
+                <div class="action-item"><div class="action-num">02</div><div><strong>Expand phishing-resistant MFA</strong><span>Protect privileged and finance accounts with FIDO2 keys or passkeys; prioritize 142 uncovered identities.</span></div><div class="action-value">−12 pts</div></div>
+                <div class="action-item"><div class="action-num">03</div><div><strong>Close endpoint detection gaps</strong><span>Onboard 200 unmanaged devices to EDR to improve containment and reduce time to detect.</span></div><div class="action-value">−9 pts</div></div>
+              </div></div>
+            </article>
+            <div class="side-stack">
+              <article class="card priority-card"><div class="card-title">Risk concentration</div><div class="card-subtitle">Share of modeled annual loss</div>
+                <div class="priority-row"><span class="priority-number">01</span><div class="priority-copy"><strong>VPN vulnerability</strong><span>Unpatched edge device</span></div><span class="priority-risk">33%</span></div>
+                <div class="priority-row"><span class="priority-number">02</span><div class="priority-copy"><strong>Credential compromise</strong><span>Phishing &amp; weak MFA</span></div><span class="priority-risk" style="color:#ffbd72">21%</span></div>
+                <div class="priority-row"><span class="priority-number">03</span><div class="priority-copy"><strong>Ransomware propagation</strong><span>Limited segmentation</span></div><span class="priority-risk" style="color:#efce78">16%</span></div>
+              </article>
+              <article class="card priority-card"><div class="card-title">Expected impact of actions</div><div class="card-subtitle">If top three recommendations are implemented</div>
+                <div class="projected-score"><strong style="font-size:28px;color:#62d2aa">−39</strong><span>risk points</span></div><div class="budget-progress"><span style="width:57%"></span></div><div class="budget-remaining"><span>$1.08M exposure avoided</span><span>57% reduction</span></div>
+                <button class="button primary" style="width:100%;justify-content:center;margin-top:17px" data-goto="optimizer">Optimize these actions →</button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-optimizer">
+          <div class="page-head"><div><div class="eyebrow">Optimize investment · 04 / 05</div><h1>Security investment optimizer</h1><p class="subtitle">Allocate your security budget to the controls that reduce the most risk.</p></div><button class="button" data-goto="simulation">Run what-if simulation →</button></div>
+          <div class="optimizer-layout">
+            <article class="card investment-card">
+              <div class="investment-intro"><div class="card-title">Choose security investments</div><p>Select initiatives to model their combined risk reduction and spend.</p></div>
+              <div class="budget-control"><div><label for="budgetInput">Available security budget</label><small>Annual allocation · USD</small></div><div class="budget-input-wrap">$<input class="budget-input" id="budgetInput" type="number" min="0" max="5000000" step="25000" value="250000"></div></div>
+              <div class="investment-options" id="investmentOptions">
+                <label class="investment-option"><input type="checkbox" data-cost="85000" data-reduction="18" checked><span><span class="option-title">Patch &amp; harden edge infrastructure</span><span class="option-meta">Reduces VPN and perimeter exposure · High priority</span></span><span class="option-cost">$85,000</span><span class="option-reduction">−18 pts</span></label>
+                <label class="investment-option"><input type="checkbox" data-cost="65000" data-reduction="12" checked><span><span class="option-title">Phishing-resistant MFA rollout</span><span class="option-meta">Secures 142 privileged &amp; finance identities · High priority</span></span><span class="option-cost">$65,000</span><span class="option-reduction">−12 pts</span></label>
+                <label class="investment-option"><input type="checkbox" data-cost="95000" data-reduction="9" checked><span><span class="option-title">Endpoint detection &amp; response</span><span class="option-meta">Onboards 200 unmanaged assets to EDR · High priority</span></span><span class="option-cost">$95,000</span><span class="option-reduction">−9 pts</span></label>
+                <label class="investment-option"><input type="checkbox" data-cost="55000" data-reduction="7"><span><span class="option-title">Network segmentation program</span><span class="option-meta">Limits ransomware lateral movement · Medium priority</span></span><span class="option-cost">$55,000</span><span class="option-reduction">−7 pts</span></label>
+                <label class="investment-option"><input type="checkbox" data-cost="40000" data-reduction="5"><span><span class="option-title">Cloud posture management</span><span class="option-meta">Closes configuration drift across cloud workloads · Medium priority</span></span><span class="option-cost">$40,000</span><span class="option-reduction">−5 pts</span></label>
+                <label class="investment-option"><input type="checkbox" data-cost="30000" data-reduction="4"><span><span class="option-title">Security awareness &amp; phishing drills</span><span class="option-meta">Reduces human-factor risk · Foundational</span></span><span class="option-cost">$30,000</span><span class="option-reduction">−4 pts</span></label>
+              </div>
+            </article>
+            <div class="optimizer-side">
+              <article class="card budget-card"><div class="card-title">Budget allocation</div><div class="budget-total" id="spentValue">$245,000</div><div class="budget-caption">of <span id="budgetTotalLabel">$250,000</span> allocated</div><div class="budget-progress"><span id="budgetProgress"></span></div><div class="budget-remaining"><span>Remaining</span><strong id="remainingValue" style="font:10px var(--mono);color:#d7e1ef">$5,000</strong></div></article>
+              <article class="card projected-card"><div class="card-title">Projected risk score</div><div class="projected-score"><strong id="projectedScore">29</strong><span id="projectedReduction">−39 pts</span></div><div class="projected-gauge"><i id="projectedGauge"></i></div><div class="projected-foot"><span>Current risk · 68</span><span>Lower is better</span></div></article>
+              <div class="recommendation" id="optimizerRecommendation"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v5c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-3Z"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg><span>Current selection is within budget. Investing <strong>$245K</strong> reduces modeled risk by <strong>39 points</strong>.</span></div>
+              <button class="button primary" id="applyInvestments" style="justify-content:center">Apply investment plan</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-simulation">
+          <div class="page-head"><div><div class="eyebrow">Model future scenarios · 05 / 05</div><h1>What-if simulation</h1><p class="subtitle">See how security budget decisions change your projected risk posture.</p></div><button class="button" data-goto="optimizer">Customize investments →</button></div>
+          <div class="simulation-layout">
+            <article class="card sim-chart-card"><div class="card-head"><div><div class="card-title">Budget vs. projected cyber risk</div><div class="card-subtitle">Estimated score after investment · current baseline 68</div></div><span class="report-badge">SCENARIO MODEL</span></div>
+              <div class="sim-chart"><svg viewBox="0 0 650 310" role="img" aria-label="Projected risk score falls as security investment increases">
+                <defs><linearGradient id="simGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#62a1ff" stop-opacity=".2"/><stop offset="100%" stop-color="#62a1ff" stop-opacity=".01"/></linearGradient></defs>
+                <line class="chart-gridline" x1="55" y1="31" x2="630" y2="31"/><line class="chart-gridline" x1="55" y1="82" x2="630" y2="82"/><line class="chart-gridline" x1="55" y1="133" x2="630" y2="133"/><line class="chart-gridline" x1="55" y1="184" x2="630" y2="184"/><line class="chart-gridline" x1="55" y1="235" x2="630" y2="235"/>
+                <text class="chart-label" x="22" y="34">80</text><text class="chart-label" x="22" y="85">65</text><text class="chart-label" x="22" y="136">50</text><text class="chart-label" x="22" y="187">35</text><text class="chart-label" x="22" y="238">20</text>
+                <path fill="url(#simGradient)" d="M60 61 C95 74 118 90 160 101 S225 127 260 139 S325 162 360 172 S425 188 460 194 S525 208 560 211 S610 219 630 220 L630 235 L60 235Z"/>
+                <path fill="none" stroke="#71a2ff" stroke-width="2.4" stroke-linecap="round" d="M60 61 C95 74 118 90 160 101 S225 127 260 139 S325 162 360 172 S425 188 460 194 S525 208 560 211 S610 219 630 220"/>
+                <line id="simMarkerLine" x1="348" x2="348" y1="36" y2="235" stroke="#56d5d8" stroke-width="1.4" stroke-dasharray="4 4"/><circle id="simMarker" cx="348" cy="169" r="5" fill="#0d1421" stroke="#64dedf" stroke-width="2"/>
+                <text class="chart-label" x="51" y="261">$0</text><text class="chart-label" x="183" y="261">$100K</text><text class="chart-label" x="321" y="261">$250K</text><text class="chart-label" x="457" y="261">$400K</text><text class="chart-label" x="584" y="261">$500K</text>
+                <text class="chart-label" x="278" y="291">ANNUAL SECURITY INVESTMENT</text><text class="chart-label" transform="translate(12,170) rotate(-90)">RISK SCORE</text><text id="simMarkerLabel" x="357" y="159" fill="#72e0df" font-size="10" font-family="DM Mono">29</text>
+              </svg></div>
+            </article>
+            <div class="side-stack">
+              <article class="card slider-card"><div class="card-title">Adjust annual budget</div><div class="card-subtitle">Drag the slider to model your investment scenario</div><div class="slider-value" id="simBudgetLabel">$250,000</div><input class="range" id="budgetSlider" type="range" min="0" max="500000" step="5000" value="250000" aria-label="Annual security budget"><div class="range-labels"><span>$0</span><span>$500K</span></div>
+                <div class="sim-result"><div class="sim-result-row"><span>Projected cyber risk</span><strong id="simRiskValue">29 / 100</strong></div><div class="sim-result-row"><span>Risk reduction</span><strong class="green" id="simReductionValue">−39 pts</strong></div><div class="sim-result-row"><span>Estimated exposure</span><strong id="simExposureValue">$1.0M</strong></div><div class="sim-result-row"><span>Exposure avoided</span><strong class="green" id="simAvoidedValue">$1.4M</strong></div></div>
+              </article>
+              <article class="card scenario-list"><div class="card-title">Investment scenarios</div><div class="card-subtitle">Modeled outcomes · select to compare</div>
+                <button class="scenario-row" data-budget="0"><div><strong>Current state</strong><span>$0 additional investment</span></div><b>68 risk</b></button>
+                <button class="scenario-row" data-budget="150000"><div><strong>Essential coverage</strong><span>$150K · core controls</span></div><b>38 risk</b></button>
+                <button class="scenario-row" data-budget="250000"><div><strong>Recommended</strong><span>$250K · balanced coverage</span></div><b>29 risk</b></button>
+                <button class="scenario-row" data-budget="400000"><div><strong>Advanced posture</strong><span>$400K · defense in depth</span></div><b>22 risk</b></button>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog class="profile-dialog" id="profileDialog" aria-labelledby="profileTitle">
+    <div class="profile-header"><div><h2 id="profileTitle">Your profile</h2><p>Manage your personal and organization details.</p></div><button class="profile-close" type="button" data-close-profile aria-label="Close profile">×</button></div>
+    <form class="profile-form" id="profileForm">
+      <div class="profile-identity"><div class="profile-large-avatar" id="profileAvatar">AJ</div><div><strong id="profileDisplayName">Alex Johnson</strong><span>CyberQuant AI account</span></div></div>
+      <div class="profile-fields">
+        <div class="profile-field"><label for="profileName">Full name</label><input id="profileName" name="name" autocomplete="name" maxlength="80" required></div>
+        <div class="profile-field"><label for="profileRole">Job title</label><input id="profileRole" name="role" autocomplete="organization-title" maxlength="80" required></div>
+        <div class="profile-field full"><label for="profileEmail">Work email</label><input id="profileEmail" name="email" type="email" autocomplete="email" maxlength="254" required></div>
+        <div class="profile-field full"><label for="profileOrganization">Organization</label><input id="profileOrganization" name="organization" autocomplete="organization" maxlength="100" required></div>
+      </div>
+      <div class="profile-footer"><button class="button" type="button" data-close-profile>Cancel</button><button class="button primary" type="submit">Save profile</button></div>
+    </form>
+  </dialog>
+  <script>
+    const themeToggle = document.getElementById("themeToggle");
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      const nextTheme = theme === "light" ? "dark" : "light";
+      const label = `Switch to ${nextTheme} mode`;
+      themeToggle.setAttribute("aria-label", label);
+      themeToggle.title = label;
+      themeToggle.innerHTML = theme === "light"
+        ? '<svg viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg>'
+        : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>';
+      document.querySelector('meta[name="theme-color"]').content = theme === "light" ? "#f3f6fb" : "#080d17";
+    }
+    const savedTheme = localStorage.getItem("cyberquant-theme");
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+      localStorage.setItem("cyberquant-theme", nextTheme);
+      applyTheme(nextTheme);
+    });
+
+    const risks = [
+      { name: "Unpatched VPN gateway", category: "Infrastructure", probability: 72, impact: "$1.1M", score: 92, severity: "Critical", assets: "4 assets", symbol: "!", icon: "" },
+      { name: "Credential compromise via phishing", category: "Identity", probability: 64, impact: "$795K", score: 84, severity: "Critical", assets: "142 identities", symbol: "↗", icon: "orange" },
+      { name: "Ransomware lateral movement", category: "Endpoint", probability: 48, impact: "$920K", score: 79, severity: "High", assets: "18 servers", symbol: "⌁", icon: "orange" },
+      { name: "Cloud storage misconfiguration", category: "Cloud", probability: 41, impact: "$610K", score: 68, severity: "High", assets: "6 workloads", symbol: "◇", icon: "blue" },
+      { name: "Third-party supply chain breach", category: "Third-party", probability: 34, impact: "$1.4M", score: 63, severity: "High", assets: "3 vendors", symbol: "⌘", icon: "blue" },
+      { name: "Insider data exfiltration", category: "Data", probability: 22, impact: "$480K", score: 47, severity: "Medium", assets: "22 users", symbol: "↗", icon: "blue" },
+      { name: "DDoS service disruption", category: "Availability", probability: 18, impact: "$310K", score: 35, severity: "Medium", assets: "2 services", symbol: "⌁", icon: "blue" },
+      { name: "Legacy TLS configuration", category: "Infrastructure", probability: 12, impact: "$85K", score: 19, severity: "Low", assets: "9 endpoints", symbol: "◇", icon: "blue" }
+    ];
+    const formatMoney = value => "$" + Math.round(value).toLocaleString("en-US");
+    const formatCompact = value => "$" + (value >= 1000000 ? (value / 1000000).toFixed(1) + "M" : Math.round(value / 1000) + "K");
+    function notify(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(notify.timer);
+      notify.timer = setTimeout(() => toast.classList.remove("show"), 2800);
+    }
+    const profileDefaults = {
+      name: "Alex Johnson",
+      role: "Security lead",
+      email: "alex.johnson@northstarfinancial.com",
+      organization: "Northstar Financial"
+    };
+    const profile = {...profileDefaults,...JSON.parse(localStorage.getItem("cyberquant-profile") || "{}")};
+    const profileDialog = document.getElementById("profileDialog");
+    const profileForm = document.getElementById("profileForm");
+    function initialsFor(name) {
+      return name.trim().split(/\s+/).slice(0,2).map(part => part.charAt(0)).join("").toUpperCase() || "CQ";
+    }
+    function renderProfile() {
+      const initials = initialsFor(profile.name);
+      document.getElementById("profileName").value = profile.name;
+      document.getElementById("profileRole").value = profile.role;
+      document.getElementById("profileEmail").value = profile.email;
+      document.getElementById("profileOrganization").value = profile.organization;
+      document.getElementById("profileDisplayName").textContent = profile.name;
+      document.getElementById("profileAvatar").textContent = initials;
+      document.getElementById("sidebarUserName").textContent = profile.name;
+      document.getElementById("sidebarUserRole").textContent = profile.role;
+      document.querySelector(".workspace-company").textContent = profile.organization;
+      document.querySelector(".crumb").firstChild.textContent = profile.organization + " ";
+      document.querySelectorAll(".profile-trigger").forEach(button => {
+        button.textContent = initials;
+        button.setAttribute("aria-label", `Open ${profile.name}’s profile`);
+      });
+      document.querySelector("#view-dashboard h1").textContent = `Good morning, ${profile.name.trim().split(/\s+/)[0]}`;
+    }
+    renderProfile();
+    document.querySelectorAll("[data-open-profile]").forEach(button => button.addEventListener("click", () => {
+      renderProfile();
+      profileDialog.showModal();
+    }));
+    document.querySelectorAll("[data-close-profile]").forEach(button => button.addEventListener("click", () => profileDialog.close()));
+    profileDialog.addEventListener("click", event => {
+      if (event.target === profileDialog) profileDialog.close();
+    });
+    profileForm.addEventListener("submit", event => {
+      event.preventDefault();
+      if (!profileForm.reportValidity()) return;
+      const formData = new FormData(profileForm);
+      profile.name = String(formData.get("name")).trim();
+      profile.role = String(formData.get("role")).trim();
+      profile.email = String(formData.get("email")).trim();
+      profile.organization = String(formData.get("organization")).trim();
+      localStorage.setItem("cyberquant-profile", JSON.stringify(profile));
+      renderProfile();
+      profileDialog.close();
+      notify("Profile saved successfully.");
+    });
+    function showView(name) {
+      document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === "view-" + name));
+      document.querySelectorAll(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === name));
+      const labels = {dashboard:"Dashboard",risks:"Risk analysis",insights:"AI insights",optimizer:"Investment optimizer",simulation:"What-if simulation"};
+      document.getElementById("breadcrumb").textContent = labels[name];
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => showView(button.dataset.view)));
+    document.querySelectorAll("[data-goto]").forEach(button => button.addEventListener("click", () => showView(button.dataset.goto)));
+
+    document.getElementById("topRiskRows").innerHTML = risks.slice(0,4).map(risk => `<tr><td><div class="risk-name"><span class="risk-icon ${risk.icon}">${risk.symbol}</span>${risk.name}</div></td><td>${risk.probability}%</td><td>${risk.impact}</td><td class="score-cell">${risk.score}</td><td><span class="status ${risk.severity.toLowerCase()}">${risk.severity}</span></td></tr>`).join("");
+    function renderRiskTable() {
+      const severity = document.getElementById("severityFilter").value;
+      const sort = document.getElementById("sortRisk").value;
+      const filtered = risks.filter(risk => severity === "all" || risk.severity === severity).sort((a,b) => b[sort] - a[sort]);
+      document.getElementById("allRiskRows").innerHTML = filtered.map(risk => `<tr><td><div class="risk-name"><span class="risk-icon ${risk.icon}">${risk.symbol}</span><span>${risk.name}<small style="display:block;color:#687990;font-size:9px;font-weight:400;margin-top:3px">${risk.category}</small></span></div></td><td><div class="probability">${risk.probability}%<span class="mini-bar"><i style="width:${risk.probability}%"></i></span></div></td><td>${risk.impact}</td><td class="score-cell">${risk.score}<span style="color:#697a91"> / 100</span></td><td><span class="status ${risk.severity.toLowerCase()}">${risk.severity}</span></td><td>${risk.assets}</td></tr>`).join("");
+      document.getElementById("riskCount").textContent = `Showing ${filtered.length} of ${risks.length} modeled threat scenarios · Updated today at 09:42 UTC`;
+    }
+    document.getElementById("severityFilter").addEventListener("change", renderRiskTable);
+    document.getElementById("sortRisk").addEventListener("change", renderRiskTable);
+    renderRiskTable();
+
+    const investmentChecks = Array.from(document.querySelectorAll("#investmentOptions input"));
+    const budgetInput = document.getElementById("budgetInput");
+    function updateOptimizer() {
+      const budget = Math.max(0, Number(budgetInput.value) || 0);
+      const selected = investmentChecks.filter(input => input.checked);
+      const spend = selected.reduce((sum,input) => sum + Number(input.dataset.cost), 0);
+      const reduction = Math.min(68, selected.reduce((sum,input) => sum + Number(input.dataset.reduction), 0));
+      const score = Math.max(0, 68 - reduction);
+      const remaining = budget - spend;
+      document.getElementById("spentValue").textContent = formatMoney(spend);
+      document.getElementById("budgetTotalLabel").textContent = formatMoney(budget);
+      document.getElementById("remainingValue").textContent = formatMoney(Math.abs(remaining)) + (remaining < 0 ? " over" : "");
+      document.getElementById("remainingValue").style.color = remaining < 0 ? "var(--red)" : "#d7e1ef";
+      document.getElementById("budgetProgress").style.width = budget ? Math.min(100, spend / budget * 100) + "%" : (spend ? "100%" : "0");
+      document.getElementById("budgetProgress").style.background = remaining < 0 ? "linear-gradient(90deg,#ec737e,#ffad72)" : "";
+      document.getElementById("projectedScore").textContent = score;
+      document.getElementById("projectedReduction").textContent = "−" + reduction + " pts";
+      document.getElementById("projectedGauge").style.width = (score / 68 * 100) + "%";
+      document.getElementById("projectedGauge").style.background = score < 35 ? "linear-gradient(90deg,#55c999,#61d5cb)" : "";
+      const recommendation = document.querySelector("#optimizerRecommendation span");
+      if (remaining < 0) recommendation.innerHTML = `Selected investments exceed the available budget by <strong>${formatMoney(-remaining)}</strong>. Adjust the allocation to continue.`;
+      else recommendation.innerHTML = `Current selection is within budget. Investing <strong>${formatMoney(spend)}</strong> reduces modeled risk by <strong>${reduction} points</strong>.`;
+      document.getElementById("applyInvestments").disabled = remaining < 0 || spend === 0;
+    }
+    investmentChecks.forEach(input => input.addEventListener("change", updateOptimizer));
+    budgetInput.addEventListener("input", updateOptimizer);
+    updateOptimizer();
+    document.getElementById("applyInvestments").addEventListener("click", () => {
+      const reduction = investmentChecks.filter(input => input.checked).reduce((sum,input) => sum + Number(input.dataset.reduction), 0);
+      const cost = investmentChecks.filter(input => input.checked).reduce((sum,input) => sum + Number(input.dataset.cost), 0);
+      notify(`Investment plan saved: ${formatMoney(cost)} allocation, ${Math.min(68, reduction)} risk points reduced.`);
+    });
+
+    const slider = document.getElementById("budgetSlider");
+    const scenarios = [[0,68],[150000,38],[250000,29],[400000,22],[500000,20]];
+    function projectedRisk(budget) {
+      const nextIndex = scenarios.findIndex(([threshold]) => threshold >= budget);
+      if (nextIndex <= 0) return scenarios[Math.max(0,nextIndex)][1];
+      const [lowBudget,lowRisk] = scenarios[nextIndex - 1];
+      const [highBudget,highRisk] = scenarios[nextIndex];
+      const progress = (budget - lowBudget) / (highBudget - lowBudget);
+      return Math.round(lowRisk + (highRisk - lowRisk) * progress);
+    }
+    function updateSimulation() {
+      const budget = Number(slider.value);
+      const score = projectedRisk(budget);
+      const reduction = 68 - score;
+      const exposure = 2400000 * score / 68;
+      const x = 60 + budget / 500000 * 570;
+      const y = 31 + (80 - score) / 60 * 204;
+      document.getElementById("simBudgetLabel").textContent = formatMoney(budget);
+      document.getElementById("simRiskValue").textContent = score + " / 100";
+      document.getElementById("simReductionValue").textContent = "−" + reduction + " pts";
+      document.getElementById("simExposureValue").textContent = formatCompact(exposure);
+      document.getElementById("simAvoidedValue").textContent = formatCompact(2400000 - exposure);
+      document.getElementById("simMarkerLine").setAttribute("x1",x);
+      document.getElementById("simMarkerLine").setAttribute("x2",x);
+      document.getElementById("simMarker").setAttribute("cx",x);
+      document.getElementById("simMarker").setAttribute("cy",y);
+      const label = document.getElementById("simMarkerLabel");
+      label.setAttribute("x",Math.min(x + 9,600));
+      label.setAttribute("y",y - 10);
+      label.textContent = String(score);
+    }
+    slider.addEventListener("input",updateSimulation);
+    document.querySelectorAll(".scenario-row").forEach(button => button.addEventListener("click",() => {
+      slider.value = button.dataset.budget;
+      updateSimulation();
+      notify(`${button.querySelector("strong").textContent} scenario selected.`);
+    }));
+    updateSimulation();
+    const trendSeries = {
+      "30": { scores:[72,71,70,69,68,69,68], labels:["W−6","W−5","W−4","W−3","W−2","W−1","NOW"], period:"trailing 30 days" },
+      "90": { scores:[78,77,74,74,71,69,68], labels:["JUL 01","JUL 15","AUG 01","AUG 15","SEP 01","SEP 15","NOW"], period:"trailing 90 days" },
+      "365": { scores:[88,85,82,78,74,71,68], labels:["OCT","DEC","FEB","APR","JUN","AUG","NOW"], period:"trailing 12 months" }
+    };
+    const trendXs = [55,155,260,365,470,575,653];
+    function updateTrend(period) {
+      const series = trendSeries[period];
+      const points = series.scores.map((score,index) => [trendXs[index],204 - score * 1.76]);
+      const line = points.map(([x,y],index) => index === 0 ? `M${x} ${y}` : `C${points[index-1][0] + (x - points[index-1][0]) * .42} ${points[index-1][1]} ${x - (x - points[index-1][0]) * .42} ${y} ${x} ${y}`).join(" ");
+      document.getElementById("trendLine").setAttribute("d",line);
+      document.getElementById("trendArea").setAttribute("d",`${line} L653 160 L55 160Z`);
+      document.getElementById("trendPoints").innerHTML = points.map(([x,y],index) => `<circle class="chart-point" cx="${x}" cy="${y}" r="${index === 6 ? 4 : 3.5}"/>`).join("");
+      document.querySelectorAll(".trend-label").forEach((label,index) => { label.textContent = series.labels[index]; });
+      document.getElementById("trendValue").setAttribute("y",points[6][1] - 9);
+      document.getElementById("trendValue").textContent = String(series.scores[6]);
+      document.getElementById("trendSubtitle").textContent = `Risk score vs. risk appetite · ${series.period}`;
+    }
+    document.getElementById("periodSelect").addEventListener("change",event => {
+      updateTrend(event.target.value);
+      notify(`Dashboard reporting period: ${event.target.options[event.target.selectedIndex].text}`);
+    });
+    document.getElementById("notificationButton").addEventListener("click",() => notify("You’re all caught up — no new security alerts."));
+    document.getElementById("exportButton").addEventListener("click",() => {
+      const content = ["CyberQuant AI — Northstar Financial Risk Report","","Overall cyber risk score: 68 / 100","Financial risk exposure: $2.4M","Critical vulnerabilities: 12","Security coverage: 84%","","Top risks:",...risks.slice(0,5).map(r => `${r.severity}: ${r.name} | Probability ${r.probability}% | Impact ${r.impact} | Score ${r.score}`)].join("\n");
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([content],{type:"text/plain"}));
+      link.download = "cyberquant-risk-report.txt";
+      link.click();
+      URL.revokeObjectURL(link.href);
+      notify("Risk report downloaded.");
+    });
+    document.getElementById("riskExport").addEventListener("click",() => {
+      const rows = [["Risk scenario","Category","Probability","Business impact","Risk score","Severity","Asset scope"],...risks.map(r => [r.name,r.category,r.probability+"%",r.impact,r.score,r.severity,r.assets])];
+      const csv = rows.map(row => row.map(value => `"${String(value).replaceAll('"','""')}"`).join(",")).join("\r\n");
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+      link.download = "cyberquant-risk-register.csv";
+      link.click();
+      URL.revokeObjectURL(link.href);
+      notify("Risk register exported as CSV.");
+    });
+    document.getElementById("refreshInsight").addEventListener("click",event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8m0-12.8L5.6 18.4"/></svg>Analyzing risk signals…';
+      setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg>Refresh analysis';
+        notify("AI analysis refreshed · 24 risk scenarios re-evaluated.");
+      },1000);
+    });
+  </script>
+</body>
+</html>
